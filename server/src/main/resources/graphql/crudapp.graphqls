@@ -1,0 +1,85 @@
+type Person {
+    personId: Int!,
+    companyId: Int,
+    company: Company,
+    firstName: String!,
+    lastName: String!,
+    emailAddress: String!,
+    streetAddress: String!,
+    city: String!,
+    state: String!,
+    zipCode: String!
+}
+
+type Company {
+    companyId: Int!,
+    companyName: String!,
+    websiteURI: String!,
+    phoneNumber: String!,
+    streetAddress: String!,
+    city: String!,
+    state: String!,
+    zipCode: String!
+    people: [Person]
+}
+
+type Query {
+    getPeople:[Person]
+    getPerson(personId: Int):Person
+    getCompany(companyId: Int):Company
+    getCompanies:[Company]
+}
+
+type Mutation {
+    createPerson(
+        companyId: Int,
+        firstName: String!,
+        lastName: String!,
+        emailAddress: String!,
+        streetAddress: String!,
+        city: String!,
+        state: String!,
+        zipCode: String!
+    ):Person
+
+    updatePerson(
+        personId: Int!
+        companyId: Int,
+        firstName: String!,
+        lastName: String!,
+        emailAddress: String!,
+        streetAddress: String!,
+        city: String!,
+        state: String!,
+        zipCode: String!
+    ):Person
+
+    deletePerson(
+        personId: Int!
+    ):Boolean
+
+    createCompany(
+        companyName: String!,
+        websiteURI: String!,
+        phoneNumber: String!,
+        streetAddress: String!,
+        city: String!,
+        state: String!,
+        zipCode: String!
+    ):Company
+
+    updateCompany(
+        companyId: Int!,
+        companyName: String!,
+        websiteURI: String!,
+        phoneNumber: String!,
+        streetAddress: String!,
+        city: String!,
+        state: String!,
+        zipCode: String!
+    ):Company
+
+    deleteCompany(
+        companyId: Int!
+    ):Boolean
+}

@@ -1,15 +1,16 @@
 package com.aquent.crudapp.person;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-
+import com.aquent.crudapp.GraphqlFieldException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Default implementation of {@link PersonService}.
@@ -38,31 +39,37 @@ public class DefaultPersonService implements PersonService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
-    public Integer createPerson(Person person) {
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public Person createPerson(Person person) {
         return personDao.createPerson(person);
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void updatePerson(Person person) {
         personDao.updatePerson(person);
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void deletePerson(Integer id) {
         personDao.deletePerson(id);
     }
 
     @Override
-    public List<String> validatePerson(Person person) {
+    public void validatePerson(Person person) {
         Set<ConstraintViolation<Person>> violations = validator.validate(person);
-        List<String> errors = new ArrayList<String>(violations.size());
-        for (ConstraintViolation<Person> violation : violations) {
-            errors.add(violation.getMessage());
+
+        if(!violations.isEmpty()) {
+            Map<String, GraphqlFieldException.Details> detailsMap = new HashMap<>();
+            for (ConstraintViolation<Person> violation : violations) {
+                String fieldName = violation.getPropertyPath().toString();
+                GraphqlFieldException.Details detail = new GraphqlFieldException.Details();
+                detail.message = violation.getMessage();
+                detail.value = violation.getInvalidValue();
+                detailsMap.put(fieldName, detail);
+            }
+            throw new GraphqlFieldException("Person is invalid", detailsMap);
         }
-        Collections.sort(errors);
-        return errors;
     }
 }

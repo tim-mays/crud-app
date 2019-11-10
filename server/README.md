@@ -13,10 +13,10 @@ Add ability to manage clients (companies):
 * The user should be able to create, edit, delete and list Clients.
 * Clients should have a company name, website URI, phone number, and physical/mailing address.
 * Clients can have zero, one, or multiple associated contacts.
-* When editing a person, the user should be able to choose the associated client.
-* When viewing a person, the associated client should be shown.
-* When viewing a client, the associated contacts should be shown.
-* When editing a client, the user should be able to add or remove associated contacts.
+* When editing a person, the user should be able to choose the associated company.
+* When viewing a person, the associated company should be shown.
+* When viewing a company, the associated contacts should be shown.
+* When editing a company, the user should be able to add or remove associated contacts.
 
 ## Story #2
 

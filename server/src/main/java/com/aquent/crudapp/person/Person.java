@@ -1,5 +1,8 @@
 package com.aquent.crudapp.person;
 
+import com.aquent.crudapp.company.Company;
+
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -9,6 +12,8 @@ import javax.validation.constraints.Size;
 public class Person {
 
     private Integer personId;
+    private Integer companyId;
+    private Company company;
 
     @NotNull
     @Size(min = 1, max = 50, message = "First name is required with maximum length of 50")
@@ -20,6 +25,7 @@ public class Person {
 
     @NotNull
     @Size(min = 1, max = 50, message = "Email address is required with maximum length of 50")
+    @Email(message = "Email address is required and must be a valid email address format")
     private String emailAddress;
 
     @NotNull
@@ -45,6 +51,14 @@ public class Person {
     public void setPersonId(Integer personId) {
         this.personId = personId;
     }
+
+    public Integer getCompanyId() { return companyId; }
+
+    public void setCompanyId(Integer companyId) { this.companyId = companyId; }
+
+    public Company getCompany() { return company; }
+
+    public void setCompany(Company company) { this.company = company; }
 
     public String getFirstName() {
         return firstName;

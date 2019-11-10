@@ -1,8 +1,8 @@
 package com.aquent.crudapp.person;
 
-import java.util.List;
-
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * Operations on the "person" table.
@@ -21,9 +21,9 @@ public interface PersonDao {
      * Creates a new person record.
      *
      * @param person the values to save
-     * @return the new person ID
+     * @return the new person
      */
-    Integer createPerson(Person person);
+    Person createPerson(Person person);
 
     /**
      * Retrieves a person record by ID.

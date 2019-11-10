@@ -1,8 +1,8 @@
 package com.aquent.crudapp.person;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Person operations.
@@ -21,9 +21,9 @@ public interface PersonService {
      * Creates a new person record.
      *
      * @param person the values to save
-     * @return the new person ID
+     * @return the new person
      */
-    Integer createPerson(Person person);
+    Person createPerson(Person person);
 
     /**
      * Retrieves a person record by ID.
@@ -51,7 +51,6 @@ public interface PersonService {
      * Validates populated person data.
      *
      * @param person the values to validate
-     * @return list of error messages
      */
-    List<String> validatePerson(Person person);
+    void validatePerson(Person person);
 }

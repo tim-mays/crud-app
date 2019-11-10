@@ -1,10 +1,7 @@
 package com.aquent.crudapp.person;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
+import com.aquent.crudapp.util.ResultSetRowMap;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,20 +11,26 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 /**
  * Spring JDBC implementation of {@link PersonDao}.
  */
 @Component
 public class JdbcPersonDao implements PersonDao {
 
-    private static final String SQL_LIST_PEOPLE = "SELECT * FROM person ORDER BY first_name, last_name, person_id";
-    private static final String SQL_READ_PERSON = "SELECT * FROM person WHERE person_id = :personId";
+    private static final String SQL_LIST_PEOPLE = "SELECT * FROM person LEFT JOIN company ON person.company_id=company.company_id ORDER BY first_name, last_name, person_id";
+    private static final String SQL_READ_PERSON = "SELECT * FROM person LEFT JOIN company ON person.company_id=company.company_id WHERE person_id = :personId";
     private static final String SQL_DELETE_PERSON = "DELETE FROM person WHERE person_id = :personId";
-    private static final String SQL_UPDATE_PERSON = "UPDATE person SET (first_name, last_name, email_address, street_address, city, state, zip_code)"
-                                                  + " = (:firstName, :lastName, :emailAddress, :streetAddress, :city, :state, :zipCode)"
+    private static final String SQL_UPDATE_PERSON = "UPDATE person SET (company_id, first_name, last_name, email_address, street_address, city, state, zip_code)"
+                                                  + " = (:companyId, :firstName, :lastName, :emailAddress, :streetAddress, :city, :state, :zipCode)"
                                                   + " WHERE person_id = :personId";
-    private static final String SQL_CREATE_PERSON = "INSERT INTO person (first_name, last_name, email_address, street_address, city, state, zip_code)"
-                                                  + " VALUES (:firstName, :lastName, :emailAddress, :streetAddress, :city, :state, :zipCode)";
+    private static final String SQL_CREATE_PERSON = "INSERT INTO person (company_id, first_name, last_name, email_address, street_address, city, state, zip_code)"
+                                                  + " VALUES (:companyId, :firstName, :lastName, :emailAddress, :streetAddress, :city, :state, :zipCode)";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -48,23 +51,23 @@ public class JdbcPersonDao implements PersonDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void deletePerson(Integer personId) {
         namedParameterJdbcTemplate.update(SQL_DELETE_PERSON, Collections.singletonMap("personId", personId));
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void updatePerson(Person person) {
         namedParameterJdbcTemplate.update(SQL_UPDATE_PERSON, new BeanPropertySqlParameterSource(person));
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
-    public Integer createPerson(Person person) {
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public Person createPerson(Person person) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(SQL_CREATE_PERSON, new BeanPropertySqlParameterSource(person), keyHolder);
-        return keyHolder.getKey().intValue();
+        return readPerson(Objects.requireNonNull(keyHolder.getKey()).intValue());
     }
 
     /**
@@ -73,17 +76,8 @@ public class JdbcPersonDao implements PersonDao {
     private static final class PersonRowMapper implements RowMapper<Person> {
 
         @Override
-        public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Person person = new Person();
-            person.setPersonId(rs.getInt("person_id"));
-            person.setFirstName(rs.getString("first_name"));
-            person.setLastName(rs.getString("last_name"));
-            person.setEmailAddress(rs.getString("email_address"));
-            person.setStreetAddress(rs.getString("street_address"));
-            person.setCity(rs.getString("city"));
-            person.setState(rs.getString("state"));
-            person.setZipCode(rs.getString("zip_code"));
-            return person;
+        public Person mapRow(@NotNull ResultSet rs, int rowNum) throws SQLException {
+            return ResultSetRowMap.mapPerson(rs);
         }
     }
 }
