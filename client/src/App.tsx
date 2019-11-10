@@ -1,11 +1,12 @@
 import React from 'react';
+import Routes from './routes';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-
-    </div>
+    <React.Fragment>
+      <Routes />
+    </React.Fragment>
   );
-}
+};
 
 export default App;
