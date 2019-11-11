@@ -5,7 +5,7 @@ interface IStateSelectProps {
   onChange: any;
   required: boolean;
   invalid: boolean;
-  value?: string;
+  defaultValue?: string;
 }
 
 const StateSelect: React.FC<IStateSelectProps> = props => {
@@ -19,7 +19,7 @@ const StateSelect: React.FC<IStateSelectProps> = props => {
         invalid={props.invalid}
         onChange={props.onChange}
         required={props.required}
-        value={props.value ? props.value : undefined}
+        defaultValue={props.defaultValue}
       >
         <option value="-1">Select</option>
         <option value="AL">Alabama</option>

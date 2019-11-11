@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 
 interface ICompanySelect {
   onChange: any;
-  value?: number;
+  defaultValue?: number;
 }
 
 interface ICompany {
@@ -39,7 +39,7 @@ const CompanySelect: React.FC<ICompanySelect> = props => {
           name="company"
           id="company"
           onChange={props.onChange}
-          value={props.value ? props.value : undefined}
+          defaultValue={props.defaultValue}
         >
           <option value="-1">None</option>
           {data &&

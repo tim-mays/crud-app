@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { CREATE_PERSON_MUTATION, EDIT_PERSON_MUTATION } from 'graphqlTags';
 import {
   Button,
   Form,
@@ -25,7 +25,7 @@ interface IContactForm {
 
 interface IPerson {
   personId: number;
-  companyId?: number;
+  companyId: number;
   firstName: string;
   lastName: string;
   emailAddress: string;
@@ -35,70 +35,20 @@ interface IPerson {
   zipCode: string;
 }
 
-const CREATE_PERSON_MUTATION = gql`
-  mutation CreatePerson(
-    $firstName: String!
-    $lastName: String!
-    $emailAddress: String!
-    $streetAddress: String!
-    $city: String!
-    $state: String!
-    $zipCode: String!
-    $companyId: Int
-  ) {
-    createPerson(
-      firstName: $firstName
-      lastName: $lastName
-      emailAddress: $emailAddress
-      streetAddress: $streetAddress
-      city: $city
-      state: $state
-      zipCode: $zipCode
-      companyId: $companyId
-    ) {
-      personId
-    }
-  }
-`;
-
-const EDIT_PERSON_MUTATION = gql`
-  mutation EditPerson(
-    $personId: Int
-    $firstName: String!
-    $lastName: String!
-    $emailAddress: String!
-    $streetAddress: String!
-    $city: String!
-    $state: String!
-    $zipCode: String!
-    $companyId: Int
-  ) {
-    updatePerson(
-      personId: $personId
-      firstName: $firstName
-      lastName: $lastName
-      emailAddress: $emailAddress
-      streetAddress: $streetAddress
-      city: $city
-      state: $state
-      zipCode: $zipCode
-      companyId: $companyId
-    ) {
-      personId
-    }
-  }
-`;
+class Person implements IPerson {
+  personId!: number;
+  companyId!: number;
+  firstName!: string;
+  lastName!: string;
+  emailAddress!: string;
+  streetAddress!: string;
+  city!: string;
+  state!: string;
+  zipCode!: string;
+}
 
 const ContactForm: React.FC<IContactForm> = props => {
-  const { person } = props;
-  const [firstName, setFirstName] = useState(person ? person.firstName : '');
-  const [lastName, setLastName] = useState();
-  const [emailAddress, setEmailAddress] = useState();
-  const [streetAddress, setStreetAddress] = useState();
-  const [city, setCity] = useState();
-  const [state, setState] = useState();
-  const [zipCode, setZipCode] = useState();
-  const [companyId, setCompanyId] = useState();
+  const [person, setPerson] = useState(new Person());
 
   const [firstNameIsInvalid, setFirstNameIsInvalid] = useState();
   const [lastNameIsInvalid, setLastNameIsInvalid] = useState();
@@ -107,6 +57,12 @@ const ContactForm: React.FC<IContactForm> = props => {
   const [cityIsInvalid, setCityIsInvalid] = useState();
   const [stateIsInvalid, setStateIsInvalid] = useState();
   const [zipCodeIsInvalid, setZipCodIsInvalid] = useState();
+
+  useEffect(() => {
+    if (props.person) {
+      setPerson({ ...props.person });
+    }
+  }, [props.person]);
 
   const [createPerson] = useMutation(CREATE_PERSON_MUTATION, {
     onCompleted: data => {
@@ -124,47 +80,36 @@ const ContactForm: React.FC<IContactForm> = props => {
 
   const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
-
     if (validateForm()) {
-      if (props.person && props.person.personId) {
+      if (person.personId) {
         editPerson({
           variables: {
-            personId: props.person.personId,
-            firstName: firstName,
-            lastName: lastName,
-            emailAddress: emailAddress,
-            streetAddress: streetAddress,
-            city: city,
-            state: state,
-            zipCode: zipCode,
-            companyId: companyId
+            ...person
           }
         });
       } else {
         createPerson({
           variables: {
-            firstName: firstName,
-            lastName: lastName,
-            emailAddress: emailAddress,
-            streetAddress: streetAddress,
-            city: city,
-            state: state,
-            zipCode: zipCode,
-            companyId: companyId
+            ...person
           }
         });
+        setPerson(new Person());
       }
     }
   };
 
+  const EMAIL_PATTERN = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
   const validateForm = () => {
-    setFirstNameIsInvalid(!validateField(firstName, 1, 50));
-    setLastNameIsInvalid(!validateField(lastName, 1, 50));
-    setEmailAddressIsInvalid(!validateField(emailAddress, 1, 50));
-    setStreetAddressIsInvalid(!validateField(streetAddress, 1, 50));
-    setCityIsInvalid(!validateField(city, 1, 50));
-    setStateIsInvalid(!validateField(state, 2, 2));
-    setZipCodIsInvalid(!validateField(zipCode, 5, 5));
+    setFirstNameIsInvalid(!validateField(person.firstName, 1, 50));
+    setLastNameIsInvalid(!validateField(person.lastName, 1, 50));
+    setEmailAddressIsInvalid(
+      !validateField(person.emailAddress, 1, 50, EMAIL_PATTERN)
+    );
+    setStreetAddressIsInvalid(!validateField(person.streetAddress, 1, 50));
+    setCityIsInvalid(!validateField(person.city, 1, 50));
+    setStateIsInvalid(!validateField(person.state, 2, 2));
+    setZipCodIsInvalid(!validateField(person.zipCode, 5, 5));
 
     return (
       !firstNameIsInvalid &&
@@ -180,10 +125,13 @@ const ContactForm: React.FC<IContactForm> = props => {
   const validateField = (
     field: string,
     minLength: number,
-    maxLength: number
+    maxLength: number,
+    regex?: RegExp
   ) => {
+    const regexMatch = regex ? regex.test(field) : true;
     return (
       field !== undefined &&
+      regexMatch &&
       field.length >= minLength &&
       field.length <= maxLength
     );
@@ -195,34 +143,46 @@ const ContactForm: React.FC<IContactForm> = props => {
     const value = event.target.value;
     switch (event.target.id) {
       case 'firstName':
-        setFirstName(value);
+        person.firstName = value;
+        setFirstNameIsInvalid(!validateField(value, 1, 50));
         break;
       case 'lastName':
-        setLastName(value);
+        person.lastName = value;
+        setLastNameIsInvalid(!validateField(value, 1, 50));
         break;
       case 'emailAddress':
-        setEmailAddress(value);
+        person.emailAddress = value;
+        setEmailAddressIsInvalid(
+          !validateField(person.emailAddress, 1, 50, EMAIL_PATTERN)
+        );
         break;
       case 'streetAddress':
-        setStreetAddress(value);
+        person.streetAddress = value;
+        setStreetAddressIsInvalid(!validateField(value, 1, 50));
         break;
       case 'city':
-        setCity(value);
+        person.city = value;
+        setCityIsInvalid(!validateField(value, 1, 50));
         break;
       case 'state':
-        setState(value !== '-1' ? value : undefined);
+        person.state = value !== '-1' ? value : '';
+        setStateIsInvalid(!validateField(value, 2, 2));
         break;
       case 'zipCode':
-        setZipCode(value);
+        person.zipCode = value;
+        setZipCodIsInvalid(!validateField(value, 5, 5));
         break;
       case 'company':
-        setCompanyId(value);
+        person.companyId = parseInt(value);
         break;
     }
   };
 
   const handleToggleModal = () => {
     props.onToggleModal();
+    if (props.person && props.person.personId && !validateForm()) {
+      setPerson(props.person ? props.person : new Person());
+    }
     setFirstNameIsInvalid(false);
     setLastNameIsInvalid(false);
     setEmailAddressIsInvalid(false);
@@ -230,20 +190,13 @@ const ContactForm: React.FC<IContactForm> = props => {
     setCityIsInvalid(false);
     setStateIsInvalid(false);
     setZipCodIsInvalid(false);
-
-    setFirstName('');
-    setLastName('');
-    setEmailAddress('');
-    setStreetAddress('');
-    setCity('');
-    setState('');
-    setZipCode('');
-    setCompanyId('');
   };
 
   return (
     <Modal isOpen={props.open} toggle={handleToggleModal}>
-      <ModalHeader toggle={handleToggleModal}>Create A New Contact</ModalHeader>
+      <ModalHeader toggle={handleToggleModal}>
+        {person && person.personId ? 'Edit ' : 'Create '} A New Contact
+      </ModalHeader>
       <ModalBody>
         <Form onSubmit={handleSubmit}>
           <FormGroup>
@@ -256,7 +209,7 @@ const ContactForm: React.FC<IContactForm> = props => {
               required
               invalid={firstNameIsInvalid}
               onChange={handleFieldChange}
-              value={firstName}
+              defaultValue={person ? person.firstName : undefined}
             />
             <FormFeedback>Oops! First Name is missing</FormFeedback>
           </FormGroup>
@@ -270,7 +223,7 @@ const ContactForm: React.FC<IContactForm> = props => {
               required
               invalid={lastNameIsInvalid}
               onChange={handleFieldChange}
-              value={lastName}
+              defaultValue={person ? person.lastName : undefined}
             />
             <FormFeedback>Oops! Last Name is missing</FormFeedback>
           </FormGroup>
@@ -284,9 +237,11 @@ const ContactForm: React.FC<IContactForm> = props => {
               required
               invalid={emailAddressIsInvalid}
               onChange={handleFieldChange}
-              value={emailAddress}
+              defaultValue={person ? person.emailAddress : undefined}
             />
-            <FormFeedback>Oops! Email Address is missing</FormFeedback>
+            <FormFeedback>
+              Oops! Email Address is missing or is not valid{' '}
+            </FormFeedback>
           </FormGroup>
           <FormGroup>
             <Label for="streetAddress">Street Address</Label>
@@ -298,7 +253,7 @@ const ContactForm: React.FC<IContactForm> = props => {
               required
               invalid={streetAddressIsInvalid}
               onChange={handleFieldChange}
-              value={streetAddress}
+              defaultValue={person ? person.streetAddress : undefined}
             />
             <FormFeedback>Oops! Street Address is missing</FormFeedback>
           </FormGroup>
@@ -312,7 +267,7 @@ const ContactForm: React.FC<IContactForm> = props => {
               required
               invalid={cityIsInvalid}
               onChange={handleFieldChange}
-              value={city}
+              defaultValue={person ? person.city : undefined}
             />
             <FormFeedback>Oops! City is missing</FormFeedback>
           </FormGroup>
@@ -320,7 +275,7 @@ const ContactForm: React.FC<IContactForm> = props => {
             onChange={handleFieldChange}
             required
             invalid={stateIsInvalid}
-            value={state}
+            defaultValue={person ? person.state : undefined}
           />
           <FormGroup>
             <Label for="zipCode">Zip Code</Label>
@@ -332,11 +287,14 @@ const ContactForm: React.FC<IContactForm> = props => {
               required
               invalid={zipCodeIsInvalid}
               onChange={handleFieldChange}
-              value={zipCode}
+              defaultValue={person ? person.zipCode : undefined}
             />
             <FormFeedback>Oops! Zip Code is missing</FormFeedback>
           </FormGroup>
-          <CompanySelect onChange={handleFieldChange} value={companyId} />
+          <CompanySelect
+            onChange={handleFieldChange}
+            defaultValue={person ? person.companyId : undefined}
+          />
         </Form>
       </ModalBody>
       <ModalFooter>
