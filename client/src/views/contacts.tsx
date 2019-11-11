@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState, Fragment } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import { Button, Container } from 'reactstrap';
+import TitleBar from 'components/titleBar';
+import ContactTable from 'components/contactTable';
+import ContactForm from 'components/contactForm';
 
 interface Person {
   personId: number;
@@ -35,50 +39,36 @@ const PEOPLE_QUERY = gql`
 `;
 
 const Contacts: React.FC = () => {
+  const [showModal, setShowModal] = useState(false);
+  const toggleModal = () => setShowModal(!showModal);
   const { loading, data } = useQuery<PersonData>(PEOPLE_QUERY);
+  const button = (
+    <Button color="success" onClick={toggleModal}>
+      Add Contact
+    </Button>
+  );
   return (
-    <div className="home">
-      <h2>Aquent Developer Candidate Project - Contacts</h2>
+    <Container>
+      <TitleBar
+        title="Aquent Developer Candidate Project - Contacts"
+        button={button}
+      ></TitleBar>
       {loading ? (
         <h4>Loading...</h4>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Company ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Email Address</th>
-              <th>Street Address</th>
-              <th>City</th>
-              <th>State</th>
-              <th>Zip Code</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data &&
-              data.getPeople.map(person => (
-                <tr key={person.personId}>
-                  <td>{person.personId}</td>
-                  <td>{person.companyId}</td>
-                  <td>{person.firstName}</td>
-                  <td>{person.lastName}</td>
-                  <td>
-                    <a href={`mailto:${person.emailAddress}`}>
-                      {person.emailAddress}
-                    </a>
-                  </td>
-                  <td>{person.streetAddress}</td>
-                  <td>{person.city}</td>
-                  <td>{person.state}</td>
-                  <td>{person.zipCode}</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+        <Fragment>
+          {data && data.getPeople ? (
+            <ContactTable people={data.getPeople} />
+          ) : null}
+
+          <ContactForm
+            open={showModal}
+            onToggleModal={toggleModal}
+            refetchQueries={['people']}
+          />
+        </Fragment>
       )}
-    </div>
+    </Container>
   );
 };
 

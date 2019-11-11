@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Home from './views/home';
-import Companies from './views/companies';
-import Contacts from './views/contacts';
+import Home from 'views/home';
+import Companies from 'views/companies';
+import Contacts from 'views/contacts';
 
 class Routes extends Component {
   render() {

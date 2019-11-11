@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import { Table } from 'reactstrap';
 
 interface Company {
   companyId: number;
@@ -40,7 +41,7 @@ const Companies: React.FC = () => {
       {loading ? (
         <h4>Loading...</h4>
       ) : (
-        <table>
+        <Table striped>
           <thead>
             <tr>
               <th>ID</th>
@@ -76,7 +77,7 @@ const Companies: React.FC = () => {
                 </tr>
               ))}
           </tbody>
-        </table>
+        </Table>
       )}
     </div>
   );
