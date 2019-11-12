@@ -28,8 +28,8 @@ public class DefaultPersonService implements PersonService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<Person> listPeople() {
-        return personDao.listPeople();
+    public List<Person> listPeople(Integer companyId) {
+        return personDao.listPeople(companyId);
     }
 
     @Override

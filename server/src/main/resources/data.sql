@@ -14,6 +14,14 @@ INSERT INTO company (
     'Burnsville',
     'NC',
     '28714'
+), (
+    'Company 2',
+    'http://google.com',
+    '5554445555',
+    '123 Plain St.',
+    'Burnsville',
+    'NC',
+    '28714'
 );
 
 INSERT INTO person (
@@ -35,8 +43,17 @@ INSERT INTO person (
     'NC',
     '28801'
 ), (
-    null,
+    1,
     'Jane',
+    'Smith',
+    'fake2@aquent.com',
+    '123 Any St.',
+    'Asheville',
+    'NC',
+    '28801'
+), (
+    2,
+    'Jams',
     'Smith',
     'fake2@aquent.com',
     '123 Any St.',

@@ -18,9 +18,9 @@ public class PersonQuery implements GraphQLQueryResolver {
         this.personService = personService;
     }
 
-    public List<Person> getPeople() {
+    public List<Person> getPeople(final int id) {
         logger.info("getPeople was called");
-        return this.personService.listPeople();
+        return this.personService.listPeople(id);
     }
 
     public Person getPerson(final int id) {

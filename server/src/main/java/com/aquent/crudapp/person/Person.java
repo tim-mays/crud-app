@@ -56,10 +56,6 @@ public class Person {
 
     public void setCompanyId(Integer companyId) { this.companyId = companyId; }
 
-    public Company getCompany() { return company; }
-
-    public void setCompany(Company company) { this.company = company; }
-
     public String getFirstName() {
         return firstName;
     }

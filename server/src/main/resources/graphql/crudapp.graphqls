@@ -14,7 +14,7 @@ type Person {
 type Company {
     companyId: Int!,
     companyName: String!,
-    websiteURI: String!,
+    websiteUri: String!,
     phoneNumber: String!,
     streetAddress: String!,
     city: String!,
@@ -24,7 +24,7 @@ type Company {
 }
 
 type Query {
-    getPeople:[Person]
+    getPeople(companyId: Int):[Person]
     getPerson(personId: Int):Person
     getCompany(companyId: Int):Company
     getCompanies:[Company]
@@ -60,7 +60,7 @@ type Mutation {
 
     createCompany(
         companyName: String!,
-        websiteURI: String!,
+        websiteUri: String!,
         phoneNumber: String!,
         streetAddress: String!,
         city: String!,
@@ -71,7 +71,7 @@ type Mutation {
     updateCompany(
         companyId: Int!,
         companyName: String!,
-        websiteURI: String!,
+        websiteUri: String!,
         phoneNumber: String!,
         streetAddress: String!,
         city: String!,

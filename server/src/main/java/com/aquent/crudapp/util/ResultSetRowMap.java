@@ -20,12 +20,6 @@ public class ResultSetRowMap {
         person.setZipCode(rs.getString("zip_code"));
         person.setCompanyId(rs.getInt("company_id"));
 
-        if (!rs.wasNull()) {
-            person.setCompany(mapCompany(rs));
-        } else {
-            person.setCompanyId(null);
-        }
-
         return person;
     }
 
@@ -33,7 +27,7 @@ public class ResultSetRowMap {
         Company company = new Company();
         company.setCompanyId(rs.getInt("company_id"));
         company.setCompanyName(rs.getString("company_name"));
-        company.setWebsiteURI(rs.getString("website_uri"));
+        company.setWebsiteUri(rs.getString("website_uri"));
         company.setPhoneNumber(rs.getString("phone_number"));
         company.setStreetAddress(rs.getString("street_address"));
         company.setCity(rs.getString("city"));

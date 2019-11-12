@@ -18,7 +18,7 @@ public class CompanyMutation implements GraphQLMutationResolver {
 
     public Company createCompany(
             final String companyName,
-            final String websiteURI,
+            final String websiteUri,
             final String phoneNumber,
             final String streetAddress,
             final String city,
@@ -29,7 +29,7 @@ public class CompanyMutation implements GraphQLMutationResolver {
 
         Company company = new Company();
         company.setCompanyName(companyName);
-        company.setWebsiteURI(websiteURI);
+        company.setWebsiteUri(websiteUri);
         company.setPhoneNumber(phoneNumber);
         company.setStreetAddress(streetAddress);
         company.setCity(city);
@@ -43,17 +43,19 @@ public class CompanyMutation implements GraphQLMutationResolver {
     public Company updateCompany(
             final Integer companyId,
             final String companyName,
-            final String websiteURI,
+            final String websiteUri,
             final String phoneNumber,
             final String streetAddress,
             final String city,
             final String state,
             final String zipCode
     ) {
+        logger.info("updateCompany was called");
+
         Company company = new Company();
         company.setCompanyId(companyId);
         company.setCompanyName(companyName);
-        company.setWebsiteURI(websiteURI);
+        company.setWebsiteUri(websiteUri);
         company.setPhoneNumber(phoneNumber);
         company.setStreetAddress(streetAddress);
         company.setCity(city);

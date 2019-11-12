@@ -23,7 +23,7 @@ import java.util.Objects;
 @Component
 public class JdbcPersonDao implements PersonDao {
 
-    private static final String SQL_LIST_PEOPLE = "SELECT * FROM person LEFT JOIN company ON person.company_id=company.company_id ORDER BY first_name, last_name, person_id";
+    private static final String SQL_LIST_PEOPLE = "SELECT * FROM person WHERE company_id = :companyId ORDER BY first_name, last_name, person_id";
     private static final String SQL_READ_PERSON = "SELECT * FROM person LEFT JOIN company ON person.company_id=company.company_id WHERE person_id = :personId";
     private static final String SQL_DELETE_PERSON = "DELETE FROM person WHERE person_id = :personId";
     private static final String SQL_UPDATE_PERSON = "UPDATE person SET (company_id, first_name, last_name, email_address, street_address, city, state, zip_code)"
@@ -40,8 +40,9 @@ public class JdbcPersonDao implements PersonDao {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<Person> listPeople() {
-        return namedParameterJdbcTemplate.getJdbcOperations().query(SQL_LIST_PEOPLE, new PersonRowMapper());
+    public List<Person> listPeople(Integer companyId) {
+        //return namedParameterJdbcTemplate.getJdbcOperations().query(SQL_LIST_PEOPLE, new PersonRowMapper());
+        return namedParameterJdbcTemplate.query(SQL_LIST_PEOPLE, Collections.singletonMap("companyId", companyId), new PersonRowMapper());
     }
 
     @Override

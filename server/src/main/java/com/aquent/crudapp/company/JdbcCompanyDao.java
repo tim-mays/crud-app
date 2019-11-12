@@ -21,8 +21,8 @@ import java.util.Objects;
 
 @Component
 public class JdbcCompanyDao implements CompanyDao {
-    private static final String SQL_LIST_COMPANIES = "SELECT * FROM company LEFT JOIN person ON company.company_id=person.company_id ORDER BY company_name, company_id";
-    private static final String SQL_READ_COMPANY = "SELECT * FROM company LEFT JOIN person ON company.company_id=person.company_id WHERE company.company_id = :companyId";
+    private static final String SQL_LIST_COMPANIES = "SELECT * FROM company ORDER BY company_name, company_id";
+    private static final String SQL_READ_COMPANY = "SELECT * FROM company WHERE company.company_id = :companyId";
     private static final String SQL_DELETE_COMPANY = "DELETE FROM company WHERE company_id = :companyId";
     private static final String SQL_UPDATE_COMPANY = "UPDATE company SET (company_name, website_uri, phone_number, street_address, city, state, zip_code)"
                                                    + " = (:companyName, :websiteUri, :phoneNumber, :streetAddress, :city, :state, :zipCode)"
@@ -71,29 +71,7 @@ public class JdbcCompanyDao implements CompanyDao {
     private static final class CompanyRowMapper implements RowMapper<Company> {
         @Override
         public Company mapRow(@NotNull ResultSet rs, int rowNum) throws SQLException {
-            Company company = ResultSetRowMap.mapCompany(rs);
-
-            List<Person> people = new ArrayList<>();
-
-            rs.getInt("person.company_id");
-            if (!rs.wasNull()) {
-                Person person = ResultSetRowMap.mapPerson(rs);
-                people.add(person);
-            }
-
-            while(rs.next()) {
-                rs.getInt("person.company_id");
-                if (!rs.wasNull()) {
-                    Person person = ResultSetRowMap.mapPerson(rs);
-                    people.add(person);
-                }
-            }
-
-            if (!people.isEmpty()) {
-                company.setPeople(people);
-            }
-
-            return company;
+            return ResultSetRowMap.mapCompany(rs);
         }
     }
 }

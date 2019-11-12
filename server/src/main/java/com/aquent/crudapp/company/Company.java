@@ -22,7 +22,7 @@ public class Company {
     @NotNull
     @Size(min = 1, max = 50, message = "Website URL is required with maximum length of 50")
     @URL(message = "Website URL must be a valid URL format")
-    private String websiteURI;
+    private String websiteUri;
 
     @NotNull
     @Size(min = 10, max = 10, message = "Phone number is required with length of 10")
@@ -63,12 +63,12 @@ public class Company {
         this.companyName = companyName;
     }
 
-    public String getWebsiteURI() {
-        return websiteURI;
+    public String getWebsiteUri() {
+        return websiteUri;
     }
 
-    public void setWebsiteURI(String websiteURI) {
-        this.websiteURI = websiteURI;
+    public void setWebsiteUri(String websiteUri) {
+        this.websiteUri = websiteUri;
     }
 
     public String getPhoneNumber() {
