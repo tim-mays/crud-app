@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Table, Button } from 'reactstrap';
 import ContactForm from 'components/contactForm';
+import ContactDelete from 'components/contactDelete';
 
 interface IPerson {
   personId: number;
@@ -19,22 +21,28 @@ interface IContactTableProps {
 
 const ContactTable: React.FC<IContactTableProps> = props => {
   const [editPerson, setEditPerson] = useState();
+  const [deletePersonId, setDeletePersonId] = useState();
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
+
+  const [showDeleteModal, setShowDeleteModal] = useState();
+  const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
   const handleEdit = (person: IPerson) => {
     setEditPerson(person);
     toggleModal();
   };
 
-  const handleDelete = (event: any) => {};
+  const handleDelete = (person: IPerson) => {
+    setDeletePersonId(person.personId);
+    setShowDeleteModal(true);
+  };
 
   return (
     <Fragment>
       <Table striped>
         <thead>
           <tr>
-            <th>Company ID</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email Address</th>
@@ -42,14 +50,15 @@ const ContactTable: React.FC<IContactTableProps> = props => {
             <th>City</th>
             <th>State</th>
             <th>Zip Code</th>
-            <th>Actions</th>
+            <th>
+              <Link to="/">Back To Company List</Link>
+            </th>
           </tr>
         </thead>
         <tbody>
           {props.people &&
             props.people.map(person => (
               <tr key={person.personId}>
-                <td>{person.companyId}</td>
                 <td>{person.firstName}</td>
                 <td>{person.lastName}</td>
                 <td>
@@ -67,9 +76,9 @@ const ContactTable: React.FC<IContactTableProps> = props => {
                   </Button>{' '}
                   <Button
                     color="danger"
-                    onClick={handleDelete}
+                    className="ml-3"
+                    onClick={() => handleDelete(person)}
                     outline
-                    className="mt-3"
                   >
                     Delete
                   </Button>
@@ -83,6 +92,12 @@ const ContactTable: React.FC<IContactTableProps> = props => {
         onToggleModal={toggleModal}
         refetchQueries={['people']}
         person={editPerson}
+      />
+      <ContactDelete
+        open={showDeleteModal}
+        personId={deletePersonId}
+        refetchQueries={['people']}
+        onToggleModal={toggleDeleteModal}
       />
     </Fragment>
   );

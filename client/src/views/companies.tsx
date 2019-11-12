@@ -1,85 +1,40 @@
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
-import { Table } from 'reactstrap';
-
-interface Company {
-  companyId: number;
-  companyName: string;
-  websiteURI: string;
-  phoneNumber: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
-
-interface CompanyData {
-  getCompanies: Company[];
-}
-
-const COMPANIES_QUERY = gql`
-  query companies {
-    getCompanies {
-      companyId
-      companyName
-      websiteURI
-      phoneNumber
-      streetAddress
-      city
-      state
-      zipCode
-    }
-  }
-`;
+import { COMPANIES_QUERY } from 'graphqlTags';
+import { ICompanyData } from 'interfaces/companyInterface';
+import { Button, Container } from 'reactstrap';
+import TitleBar from 'components/titleBar';
+import CompanyTable from 'components/companyTable';
+import CompanyForm from 'components/companyForm';
 
 const Companies: React.FC = () => {
-  const { loading, data } = useQuery<CompanyData>(COMPANIES_QUERY);
+  const { loading, data } = useQuery<ICompanyData>(COMPANIES_QUERY);
+  const [showModal, setShowModal] = useState(false);
+  const toggleModal = () => setShowModal(!showModal);
+  const button = (
+    <Button color="success" onClick={toggleModal}>
+      Add Company
+    </Button>
+  );
   return (
-    <div className="home">
-      <h2>Aquent Developer Candidate Project - Companies</h2>
+    <Container className="pt-5">
+      <TitleBar title="All Companies" button={button}></TitleBar>
       {loading ? (
         <h4>Loading...</h4>
       ) : (
-        <Table striped>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Company Name</th>
-              <th>Website</th>
-              <th>Phone Number</th>
-              <th>Street Address</th>
-              <th>City</th>
-              <th>State</th>
-              <th>Zip Code</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data &&
-              data.getCompanies.map(company => (
-                <tr key={company.companyId}>
-                  <td>{company.companyId}</td>
-                  <td>{company.companyName}</td>
-                  <td>
-                    <a
-                      href={company.websiteURI}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {company.websiteURI}
-                    </a>
-                  </td>
-                  <td>{company.phoneNumber}</td>
-                  <td>{company.streetAddress}</td>
-                  <td>{company.city}</td>
-                  <td>{company.state}</td>
-                  <td>{company.zipCode}</td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
+        <Fragment>
+          {data && data.getCompanies ? (
+            <CompanyTable companies={data.getCompanies} />
+          ) : null}
+
+          <CompanyForm
+            open={showModal}
+            onToggleModal={toggleModal}
+            refetchQueries={['companies']}
+          />
+        </Fragment>
       )}
-    </div>
+    </Container>
   );
 };
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Home from 'views/home';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Companies from 'views/companies';
 import Contacts from 'views/contacts';
 
@@ -8,9 +7,10 @@ class Routes extends Component {
   render() {
     return (
       <Router>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/companies/" component={Companies} />
-        <Route exact path="/contacts/" component={Contacts} />
+        <Switch>
+          <Route exact path="/" component={Companies} />
+          <Route exact path="/contacts/:name" component={Contacts} />
+        </Switch>
       </Router>
     );
   }

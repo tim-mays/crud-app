@@ -1,30 +1,33 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { Button, Container } from 'reactstrap';
 import TitleBar from 'components/titleBar';
+import CompanyCard from 'components/companyCard';
 import ContactTable from 'components/contactTable';
 import ContactForm from 'components/contactForm';
+import { IPersonData } from 'interfaces/personInterface';
 
-interface Person {
-  personId: number;
-  companyId: number;
-  firstName: string;
-  lastName: string;
-  emailAddress: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
+const Contacts: React.FC = () => {
+  function useLocationQuery() {
+    return new URLSearchParams(useLocation().search);
+  }
+  const query = useLocationQuery();
+  const [showModal, setShowModal] = useState(false);
+  const toggleModal = () => setShowModal(!showModal);
+  let { name } = useParams();
 
-interface PersonData {
-  getPeople: Person[];
-}
+  const [companyId, setCompanyId] = useState();
 
-const PEOPLE_QUERY = gql`
+  useEffect(() => {
+    let id = query.get('id');
+    setCompanyId(id ? parseInt(id) : undefined);
+  }, [query, companyId]);
+
+  const PEOPLE_QUERY = gql`
   query people {
-    getPeople {
+    getPeople(companyId: ${companyId}) {
       personId
       companyId
       firstName
@@ -35,28 +38,23 @@ const PEOPLE_QUERY = gql`
       state
       zipCode
     }
-  }
-`;
+  }`;
 
-const Contacts: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
-  const toggleModal = () => setShowModal(!showModal);
-  const { loading, data } = useQuery<PersonData>(PEOPLE_QUERY);
+  const { loading, data } = useQuery<IPersonData>(PEOPLE_QUERY);
+
   const button = (
     <Button color="success" onClick={toggleModal}>
       Add Contact
     </Button>
   );
   return (
-    <Container>
-      <TitleBar
-        title="Aquent Developer Candidate Project - Contacts"
-        button={button}
-      ></TitleBar>
+    <Container className="pt-5">
+      <TitleBar title={`${name} - Contacts`} button={button}></TitleBar>
       {loading ? (
         <h4>Loading...</h4>
       ) : (
         <Fragment>
+          <CompanyCard companyId={companyId} />
           {data && data.getPeople ? (
             <ContactTable people={data.getPeople} />
           ) : null}
@@ -65,6 +63,7 @@ const Contacts: React.FC = () => {
             open={showModal}
             onToggleModal={toggleModal}
             refetchQueries={['people']}
+            companyId={companyId}
           />
         </Fragment>
       )}

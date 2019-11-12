@@ -53,3 +53,68 @@ export const EDIT_PERSON_MUTATION = gql`
     }
   }
 `;
+
+export const COMPANIES_QUERY = gql`
+  query companies {
+    getCompanies {
+      companyId
+      companyName
+      websiteUri
+      phoneNumber
+      streetAddress
+      city
+      state
+      zipCode
+    }
+  }
+`;
+
+export const CREATE_COMPANY_MUTATION = gql`
+  mutation CreateCompany(
+    $companyName: String!
+    $websiteUri: String!
+    $phoneNumber: String!
+    $streetAddress: String!
+    $city: String!
+    $state: String!
+    $zipCode: String!
+  ) {
+    createCompany(
+      companyName: $companyName
+      websiteUri: $websiteUri
+      phoneNumber: $phoneNumber
+      streetAddress: $streetAddress
+      city: $city
+      state: $state
+      zipCode: $zipCode
+    ) {
+      companyId
+    }
+  }
+`;
+
+export const EDIT_COMPANY_MUTATION = gql`
+  mutation EditCompany(
+    $companyId: Int!
+    $companyName: String!
+    $websiteUri: String!
+    $phoneNumber: String!
+    $streetAddress: String!
+    $city: String!
+    $state: String!
+    $zipCode: String!
+  ) {
+    updateCompany(
+      companyId: $companyId
+      companyName: $companyName
+      websiteUri: $websiteUri
+      phoneNumber: $phoneNumber
+      streetAddress: $streetAddress
+      city: $city
+      state: $state
+      zipCode: $zipCode
+    ) {
+      companyId
+    }
+  }
+`;
