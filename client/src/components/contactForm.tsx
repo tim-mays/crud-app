@@ -72,6 +72,9 @@ const ContactForm: React.FC<IContactForm> = props => {
           }
         });
       } else {
+        if (companyId) {
+          person.companyId = companyId;
+        }
         createPerson({
           variables: {
             ...person
@@ -273,12 +276,12 @@ const ContactForm: React.FC<IContactForm> = props => {
             />
             <FormFeedback>Oops! Zip Code is missing</FormFeedback>
           </FormGroup>
-          <CompanySelect
-            onChange={handleFieldChange}
-            defaultValue={
-              companyId || person ? person.companyId : props.companyId
-            }
-          />
+          {companyId ? null : (
+            <CompanySelect
+              onChange={handleFieldChange}
+              defaultValue={companyId || person ? person.companyId : undefined}
+            />
+          )}
         </Form>
       </ModalBody>
       <ModalFooter>
