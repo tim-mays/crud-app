@@ -3,30 +3,30 @@ import gql from 'graphql-tag';
 import { Alert, Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
 import { useMutation } from '@apollo/react-hooks';
 
-interface IContactDeleteProps {
-  personId: number;
+interface ICompanyDeleteProps {
+  companyId: number;
   open: boolean;
   refetchQueries: any;
   onToggleModal: any;
 }
 
-const ContactDelete: React.FC<IContactDeleteProps> = props => {
-  const DELETE_PERSON_MUTATION = gql`
-    mutation deletePerson {
-      deletePerson(personId: ${props.personId})
+const CompanyDelete: React.FC<ICompanyDeleteProps> = props => {
+  const DELETE_COMPANY_MUTATION = gql`
+    mutation deleteCompany {
+      deleteCompany(companyId: ${props.companyId})
     }
   `;
 
-  const [deletePerson] = useMutation(DELETE_PERSON_MUTATION, {
-    onCompleted: (data: { deletePerson: boolean }) => {
-      if (data.deletePerson) {
+  const [deleteCompany] = useMutation(DELETE_COMPANY_MUTATION, {
+    onCompleted: (data: { deleteCompany: boolean }) => {
+      if (data.deleteCompany) {
       }
     },
     refetchQueries: props.refetchQueries
   });
 
   const handleYesClick = () => {
-    deletePerson();
+    deleteCompany();
     props.onToggleModal();
   };
 
@@ -35,7 +35,7 @@ const ContactDelete: React.FC<IContactDeleteProps> = props => {
       <ModalBody>
         <Alert color="danger">
           <p className="text-center">
-            Are you sure you want to delete this person?
+            Are you sure you want to delete this company?
           </p>
         </Alert>
       </ModalBody>
@@ -51,4 +51,4 @@ const ContactDelete: React.FC<IContactDeleteProps> = props => {
   );
 };
 
-export default ContactDelete;
+export default CompanyDelete;

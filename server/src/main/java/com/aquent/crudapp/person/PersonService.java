@@ -48,6 +48,13 @@ public interface PersonService {
     void deletePerson(Integer id);
 
     /**
+     * Deletes person records by company ID.
+     *
+     * @param id the person ID
+     */
+    void deletePeopleInCompany(Integer id);
+
+    /**
      * Validates populated person data.
      *
      * @param person the values to validate

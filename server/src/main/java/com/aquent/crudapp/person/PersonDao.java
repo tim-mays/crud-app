@@ -46,4 +46,11 @@ public interface PersonDao {
      * @param id the person ID
      */
     void deletePerson(Integer id);
+
+    /**
+     * Deletes a people records by company ID.
+     *
+     * @param id the person ID
+     */
+    void deletePeopleInCompany(Integer id);
 }

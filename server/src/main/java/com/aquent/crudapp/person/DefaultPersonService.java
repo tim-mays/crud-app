@@ -57,6 +57,10 @@ public class DefaultPersonService implements PersonService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void deletePeopleInCompany(Integer id) { personDao.deletePeopleInCompany(id); }
+
+    @Override
     public void validatePerson(Person person) {
         Set<ConstraintViolation<Person>> violations = validator.validate(person);
 

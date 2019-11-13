@@ -32,6 +32,8 @@ public class JdbcPersonDao implements PersonDao {
     private static final String SQL_CREATE_PERSON = "INSERT INTO person (company_id, first_name, last_name, email_address, street_address, city, state, zip_code)"
                                                   + " VALUES (:companyId, :firstName, :lastName, :emailAddress, :streetAddress, :city, :state, :zipCode)";
 
+    private static final String SQL_DELETE_PEOPLE_IN_COMPANY = "DELETE FROM person WHERE company_id = :companyId";
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public JdbcPersonDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -55,6 +57,12 @@ public class JdbcPersonDao implements PersonDao {
     @Transactional(propagation = Propagation.SUPPORTS)
     public void deletePerson(Integer personId) {
         namedParameterJdbcTemplate.update(SQL_DELETE_PERSON, Collections.singletonMap("personId", personId));
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void deletePeopleInCompany(Integer companyId) {
+        namedParameterJdbcTemplate.update(SQL_DELETE_PEOPLE_IN_COMPANY, Collections.singletonMap("companyId", companyId));
     }
 
     @Override

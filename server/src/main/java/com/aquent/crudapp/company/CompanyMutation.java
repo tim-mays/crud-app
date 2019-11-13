@@ -1,5 +1,6 @@
 package com.aquent.crudapp.company;
 
+import com.aquent.crudapp.person.PersonService;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +11,16 @@ import org.springframework.stereotype.Component;
 public class CompanyMutation implements GraphQLMutationResolver {
     private Logger logger = LoggerFactory.getLogger(CompanyMutation.class);
     private CompanyService companyService;
+    private PersonService personService;
 
     @Autowired
     private void setCompanyService(CompanyService companyService) {
         this.companyService = companyService;
+    }
+
+    @Autowired
+    private void setPersonService(PersonService personService) {
+        this.personService = personService;
     }
 
     public Company createCompany(
@@ -69,6 +76,7 @@ public class CompanyMutation implements GraphQLMutationResolver {
 
     public Boolean deleteCompany(Integer companyId) {
         logger.info("deleteCompany was called");
+        personService.deletePeopleInCompany(companyId);
         companyService.deleteCompany(companyId);
         return true;
     }

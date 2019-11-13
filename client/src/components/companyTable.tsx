@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ICompany } from 'interfaces/companyInterface';
 import { Table, Button } from 'reactstrap';
 import CompanyForm from 'components/companyForm';
+import CompanyDelete from 'components/companyDelete';
 
 interface ICompanyTableProps {
   companies: ICompany[];
@@ -10,16 +11,21 @@ interface ICompanyTableProps {
 
 const CompanyTable: React.FC<ICompanyTableProps> = props => {
   const [editCompany, setEditCompany] = useState();
+  const [deleteCompanyId, setDeleteCompanyId] = useState();
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
+
+  const [showDeleteModal, setShowDeleteModal] = useState();
+  const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
   const handleEdit = (company: ICompany) => {
     setEditCompany(company);
     toggleModal();
   };
 
-  const handleDelete = (event: any) => {
-    alert('Sorry! Company Delete is not available');
+  const handleDelete = (company: ICompany) => {
+    setDeleteCompanyId(company.companyId);
+    setShowDeleteModal(true);
   };
 
   return (
@@ -63,7 +69,7 @@ const CompanyTable: React.FC<ICompanyTableProps> = props => {
                   </Button>{' '}
                   <Button
                     color="danger"
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(company)}
                     outline
                     className="ml-3"
                   >
@@ -79,6 +85,13 @@ const CompanyTable: React.FC<ICompanyTableProps> = props => {
         onToggleModal={toggleModal}
         refetchQueries={['companies']}
         company={editCompany}
+      />
+
+      <CompanyDelete
+        open={showDeleteModal}
+        companyId={deleteCompanyId}
+        refetchQueries={['companies']}
+        onToggleModal={toggleDeleteModal}
       />
     </Fragment>
   );
