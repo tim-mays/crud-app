@@ -141,6 +141,16 @@ const CompanyForm: React.FC<ICompanyFormProps> = props => {
 
   const handleToggleModal = () => {
     props.onToggleModal();
+    if (props.company && props.company.companyId && !validateForm()) {
+      setCompany(props.company ? props.company : new Company());
+    }
+    setCompanyNameIsInvalid(false);
+    setWebUriIsInvalid(false);
+    setPhoneNumberIsInvalid(false);
+    setStreetAddressIsInvalid(false);
+    setCityIsInvalid(false);
+    setStateIsInvalid(false);
+    setZipCodIsInvalid(false);
   };
 
   return (
